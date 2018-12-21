@@ -47,7 +47,7 @@ func (mdp mongoDeviceProfile) GetBSON() (interface{}, error) {
 		Commands               []mgo.DBRef              `bson:"commands"` // List of commands to Get/Put information for devices associated with this profile
 	}{
 		DescribedObject: mdp.DescribedObject,
-		Id:              mdp.Id,
+		Id:              bson.ObjectId(mdp.Id),
 		Name:            mdp.Name,
 		Manufacturer:    mdp.Manufacturer,
 		Model:           mdp.Model,
@@ -82,7 +82,7 @@ func (mdp *mongoDeviceProfile) SetBSON(raw bson.Raw) error {
 
 	// Copy over the non-DBRef fields
 	mdp.DescribedObject = decoded.DescribedObject
-	mdp.Id = decoded.Id
+	mdp.Id = decoded.Id.Hex()
 	mdp.Name = decoded.Name
 	mdp.Manufacturer = decoded.Manufacturer
 	mdp.Model = decoded.Model

@@ -81,8 +81,8 @@ func updateDeviceServiceLastReportedConnected(device string) {
 		return
 	}
 
-	msc.UpdateLastConnected(s.Service.Id.Hex(), t)
-	msc.UpdateLastReported(s.Service.Id.Hex(), t)
+	msc.UpdateLastConnected(s.Service.Id, t)
+	msc.UpdateLastReported(s.Service.Id, t)
 }
 
 

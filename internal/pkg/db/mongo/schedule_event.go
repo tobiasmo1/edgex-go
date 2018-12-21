@@ -38,7 +38,7 @@ func (mse mongoScheduleEvent) GetBSON() (interface{}, error) {
 		Service           string        `bson:"service"`     // json body for parameters
 	}{
 		BaseObject:  mse.BaseObject,
-		Id:          mse.Id,
+		Id:          bson.ObjectIdHex(mse.Id),
 		Name:        mse.Name,
 		Schedule:    mse.Schedule,
 		Parameters:  mse.Parameters,
@@ -66,7 +66,7 @@ func (mse *mongoScheduleEvent) SetBSON(raw bson.Raw) error {
 
 	// Copy over the non-DBRef fields
 	mse.BaseObject = decoded.BaseObject
-	mse.Id = decoded.Id
+	mse.Id = decoded.Id.Hex()
 	mse.Name = decoded.Name
 	mse.Schedule = decoded.Schedule
 	mse.Parameters = decoded.Parameters

@@ -205,7 +205,7 @@ func restGetProvisionWatchersByProfileName(w http.ResponseWriter, r *http.Reques
 	}
 
 	res := make([]models.ProvisionWatcher, 0)
-	err = dbClient.GetProvisionWatchersByProfileId(&res, dp.Id.Hex())
+	err = dbClient.GetProvisionWatchersByProfileId(&res, dp.Id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		LoggingClient.Error("Problem getting provision watcher: " + err.Error())
@@ -262,7 +262,7 @@ func restGetProvisionWatchersByServiceName(w http.ResponseWriter, r *http.Reques
 
 	// Get the provision watchers
 	res := make([]models.ProvisionWatcher, 0)
-	err = dbClient.GetProvisionWatchersByServiceId(&res, ds.Service.Id.Hex())
+	err = dbClient.GetProvisionWatchersByServiceId(&res, ds.Service.Id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		LoggingClient.Error("Problem getting provision watcher: " + err.Error())
@@ -316,7 +316,7 @@ func restAddProvisionWatcher(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the device profile exists
 	// Try by ID
-	if err := dbClient.GetDeviceProfileById(&pw.Profile, pw.Profile.Id.Hex()); err != nil {
+	if err := dbClient.GetDeviceProfileById(&pw.Profile, pw.Profile.Id); err != nil {
 		// Try by name
 		if err = dbClient.GetDeviceProfileByName(&pw.Profile, pw.Profile.Name); err != nil {
 			if err == db.ErrNotFound {
@@ -332,7 +332,7 @@ func restAddProvisionWatcher(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the device service exists
 	// Try by ID
-	if err := dbClient.GetDeviceServiceById(&pw.Service, pw.Service.Service.Id.Hex()); err != nil {
+	if err := dbClient.GetDeviceServiceById(&pw.Service, pw.Service.Service.Id); err != nil {
 		// Try by name
 		if err = dbClient.GetDeviceServiceByName(&pw.Service, pw.Service.Service.Name); err != nil {
 			if err == db.ErrNotFound {
@@ -451,7 +451,7 @@ func updateProvisionWatcherFields(from models.ProvisionWatcher, to *models.Provi
 func notifyProvisionWatcherAssociates(pw models.ProvisionWatcher, action string) error {
 	// Get the device service for the provision watcher
 	var ds models.DeviceService
-	if err := dbClient.GetDeviceServiceById(&ds, pw.Service.Service.Id.Hex()); err != nil {
+	if err := dbClient.GetDeviceServiceById(&ds, pw.Service.Service.Id); err != nil {
 		return err
 	}
 

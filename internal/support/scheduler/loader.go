@@ -110,7 +110,7 @@ func getMetadataSchedules() ([]models.Schedule, error) {
 	if receivedSchedules != nil {
 		LoggingClient.Debug("Successfully queried core-metadata schedules...")
 		for _, v := range receivedSchedules {
-			LoggingClient.Debug(fmt.Sprintf("Found schedule id: %s  name: %s start time: %s", v.Id.Hex(), v.Name, v.Start))
+			LoggingClient.Debug(fmt.Sprintf("Found schedule id: %s  name: %s start time: %s", v.Id, v.Name, v.Start))
 		}
 	}
 	return receivedSchedules, nil
@@ -129,7 +129,7 @@ func getMetadataScheduleEvents() ([]models.ScheduleEvent, error) {
 	if receivedScheduleEvents != nil {
 		LoggingClient.Debug("Successfully queried core-metadata schedule events...")
 		for _, v := range receivedScheduleEvents {
-			LoggingClient.Debug(fmt.Sprintf("Found schedule event id: %s name: %s schedule: %s service name: %s ", v.Id.Hex(), v.Name, v.Schedule, v.Service))
+			LoggingClient.Debug(fmt.Sprintf("Found schedule event id: %s name: %s schedule: %s service name: %s ", v.Id, v.Name, v.Schedule, v.Service))
 		}
 	}
 
@@ -153,7 +153,7 @@ func addReceivedSchedules(schedules []models.Schedule) error {
 				LoggingClient.Info(fmt.Sprintf("Error adding core-metadata schedule name: %s - %s", schedule.Name, err.Error()))
 				return err
 			}
-			LoggingClient.Info(fmt.Sprintf("Added schedule name: %s to the schedule id: %s ", schedule.Name, schedule.Id.Hex()))
+			LoggingClient.Info(fmt.Sprintf("Added schedule name: %s to the schedule id: %s ", schedule.Name, schedule.Id))
 		}
 	}
 	return nil
@@ -176,7 +176,7 @@ func addReceivedScheduleEvents(scheduleEvents []models.ScheduleEvent) error {
 				LoggingClient.Info(fmt.Sprintf("Error adding core-metadata schedule event name: %s - %s", scheduleEvent.Name, err.Error()))
 				return err
 			}
-			LoggingClient.Info(fmt.Sprintf("Added schedule event name: %s to the schedule name: %s  schedule event id: %s", scheduleEvent.Name, scheduleEvent.Schedule, scheduleEvent.Id.Hex()))
+			LoggingClient.Info(fmt.Sprintf("Added schedule event name: %s to the schedule name: %s  schedule event id: %s", scheduleEvent.Name, scheduleEvent.Schedule, scheduleEvent.Id))
 		}
 	}
 
@@ -228,8 +228,8 @@ func loadConfigSchedules() error {
 				return LoggingClient.Error(fmt.Sprintf("Error adding schedule to the scheduler: %s", errAddedSchedule.Error()))
 			}
 
-			// add the core-metadata scheduler.id
-			schedule.Id = bson.ObjectId(newScheduleId)
+			// add the core-metadata scheduler.id; should we invoke ObjectIdHex to instantiate?
+			schedule.Id = bson.ObjectId(newScheduleId).Hex()
 
 			// add the schedule to the scheduler
 			err := addSchedule(schedule)
@@ -294,7 +294,7 @@ func loadConfigScheduleEvents() error {
 			}
 
 			// add the core-metadata version of the scheduleEvent.Id
-			scheduleEvent.Id = bson.ObjectId(newScheduleEventId)
+			scheduleEvent.Id = bson.ObjectId(newScheduleEventId).Hex()
 
 			errAddSE := addScheduleEvent(scheduleEvent)
 			if errAddSE != nil {

@@ -16,8 +16,6 @@ package models
 
 import (
 	"encoding/json"
-
-	"github.com/globalsign/mgo/bson"
 )
 
 /*
@@ -28,7 +26,7 @@ import (
  */
 type Device struct {
 	DescribedObject `bson:",inline"`
-	Id              bson.ObjectId  `bson:"_id,omitempty" json:"id"`
+	Id              string         `bson:"_id,omitempty" json:"id"`
 	Name            string         `bson:"name" json:"name"`                     // Unique name for identifying a device
 	AdminState      AdminState     `bson:"adminState" json:"adminState"`         // Admin state (locked/unlocked)
 	OperatingState  OperatingState `bson:"operatingState" json:"operatingState"` // Operating state (enabled/disabled)
@@ -45,7 +43,7 @@ type Device struct {
 func (d Device) MarshalJSON() ([]byte, error) {
 	test := struct {
 		DescribedObject
-		Id             *bson.ObjectId `json:"id"`
+		Id             *string        `json:"id"`
 		Name           *string        `json:"name"`           // Unique name for identifying a device
 		AdminState     AdminState     `json:"adminState"`     // Admin state (locked/unlocked)
 		OperatingState OperatingState `json:"operatingState"` // Operating state (enabled/disabled)

@@ -65,24 +65,24 @@ func clearMaps() {
 }
 
 func addScheduleOperation(scheduleId models.Schedule, context *ScheduleContext) {
-	scheduleIdToContextMap[scheduleId.Id.Hex()] = context
+	scheduleIdToContextMap[scheduleId.Id] = context
 	scheduleNameToContextMap[scheduleId.Name] = context
 	scheduleQueue.Add(context)
 }
 
 func deleteScheduleOperation(schedule models.Schedule, scheduleContext *ScheduleContext) {
 	scheduleContext.MarkedDeleted = true
-	scheduleIdToContextMap[schedule.Id.Hex()] = scheduleContext
+	scheduleIdToContextMap[schedule.Id] = scheduleContext
 	scheduleNameToContextMap[schedule.Name] = scheduleContext
-	delete(scheduleIdToContextMap, schedule.Id.Hex())
+	delete(scheduleIdToContextMap, schedule.Id)
 }
 
 func addScheduleEventOperation(schedule models.Schedule, scheduleEvent models.ScheduleEvent) {
-	scheduleContext, _ := scheduleIdToContextMap[schedule.Id.Hex()]
-	scheduleContext.ScheduleEventsMap[scheduleEvent.Id.Hex()] = scheduleEvent
-	scheduleEventIdToScheduleIdMap[scheduleEvent.Id.Hex()] = schedule.Id.Hex()
-	scheduleEventNameToScheduleIdMap[scheduleEvent.Name] = schedule.Id.Hex()
-	scheduleEventNameToScheduleEventIdMap[scheduleEvent.Name] = scheduleEvent.Id.Hex()
+	scheduleContext, _ := scheduleIdToContextMap[schedule.Id]
+	scheduleContext.ScheduleEventsMap[scheduleEvent.Id] = scheduleEvent
+	scheduleEventIdToScheduleIdMap[scheduleEvent.Id] = schedule.Id
+	scheduleEventNameToScheduleIdMap[scheduleEvent.Name] = schedule.Id
+	scheduleEventNameToScheduleEventIdMap[scheduleEvent.Name] = scheduleEvent.Id
 }
 
 func querySchedule(scheduleId string) (models.Schedule, error) {
@@ -121,7 +121,7 @@ func addSchedule(schedule models.Schedule) error {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	scheduleId := schedule.Id.Hex()
+	scheduleId := schedule.Id
 	LoggingClient.Debug(fmt.Sprintf("adding the schedule with id : %s at time %s", scheduleId, schedule.Start))
 
 	if _, exists := scheduleIdToContextMap[scheduleId]; exists {
@@ -148,9 +148,9 @@ func updateSchedule(schedule models.Schedule) error {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	LoggingClient.Debug("updating the schedule with id : " + schedule.Id.Hex())
+	LoggingClient.Debug("updating the schedule with id : " + schedule.Id)
 
-	scheduleId := schedule.Id.Hex()
+	scheduleId := schedule.Id
 	context, exists := scheduleIdToContextMap[scheduleId]
 	if !exists {
 		LoggingClient.Error("the schedule context with id " + scheduleId + " does not exist ")
@@ -241,7 +241,7 @@ func queryScheduleEventByName(scheduleEventName string) (models.ScheduleEvent, e
 
 	scheduleEvent, exists := scheduleContext.ScheduleEventsMap[scheduleEventId]
 	if !exists {
-		logMsg := fmt.Sprintf("could not find schedule event with schedule event id :  %s", scheduleContext.Schedule.Id.Hex())
+		logMsg := fmt.Sprintf("could not find schedule event with schedule event id :  %s", scheduleContext.Schedule.Id)
 		LoggingClient.Error(logMsg)
 		return models.ScheduleEvent{}, errors.New(logMsg)
 	}
@@ -253,7 +253,7 @@ func addScheduleEvent(scheduleEvent models.ScheduleEvent) error {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	scheduleEventId := scheduleEvent.Id.Hex()
+	scheduleEventId := scheduleEvent.Id
 	scheduleName := scheduleEvent.Schedule
 
 	LoggingClient.Debug(fmt.Sprintf("adding the schedule event with id  : %s to schedule : %s ", scheduleEventId, scheduleName))
@@ -262,7 +262,7 @@ func addScheduleEvent(scheduleEvent models.ScheduleEvent) error {
 
 	schedule := scheduleContext.Schedule
 
-	scheduleId := schedule.Id.Hex()
+	scheduleId := schedule.Id
 	LoggingClient.Debug(fmt.Sprintf("check the schedule with id : %s exists.", scheduleId))
 
 	if _, exists := scheduleIdToContextMap[scheduleId]; !exists {
@@ -287,7 +287,7 @@ func updateScheduleEvent(scheduleEvent models.ScheduleEvent) error {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	scheduleEventId := scheduleEvent.Id.Hex()
+	scheduleEventId := scheduleEvent.Id
 
 	LoggingClient.Debug("updating the schedule event with id : " + scheduleEventId)
 
@@ -307,7 +307,7 @@ func updateScheduleEvent(scheduleEvent models.ScheduleEvent) error {
 	//if the schedule event switched schedule
 	schedule := scheduleContext.Schedule
 
-	newScheduleId := schedule.Id.Hex()
+	newScheduleId := schedule.Id
 
 	if newScheduleId != oldScheduleId {
 		LoggingClient.Debug("the schedule event switched schedule from " + oldScheduleId + " to " + newScheduleId)
@@ -341,7 +341,7 @@ func updateScheduleEvent(scheduleEvent models.ScheduleEvent) error {
 		scheduleContext.ScheduleEventsMap[scheduleEventId] = scheduleEvent
 	}
 
-	LoggingClient.Debug("updated the schedule event with id " + scheduleEvent.Id.Hex() + " to schedule id : " + schedule.Id.Hex())
+	LoggingClient.Debug("updated the schedule event with id " + scheduleEvent.Id + " to schedule id : " + schedule.Id)
 
 	return nil
 }
@@ -389,7 +389,7 @@ func triggerSchedule() {
 	for i := 0; i < scheduleQueue.Length(); i++ {
 		if scheduleQueue.Peek().(*ScheduleContext) != nil {
 			scheduleContext := scheduleQueue.Remove().(*ScheduleContext)
-			scheduleId := scheduleContext.Schedule.Id.Hex()
+			scheduleId := scheduleContext.Schedule.Id
 			if scheduleContext.MarkedDeleted {
 				LoggingClient.Debug("the schedule with id : " + scheduleId + " be marked as deleted, removing it.")
 				continue //really delete from the queue
@@ -426,7 +426,7 @@ func execute(context *ScheduleContext, wg *sync.WaitGroup) error {
 
 	//execute schedule event one by one
 	for eventId := range scheduleEventsMap {
-		LoggingClient.Debug("the event with id : " + eventId + " belongs to schedule : " + context.Schedule.Id.Hex() + " will be executing!")
+		LoggingClient.Debug("the event with id : " + eventId + " belongs to schedule : " + context.Schedule.Id + " will be executing!")
 		scheduleEvent, _ := scheduleEventsMap[eventId]
 
 		executingUrl := getUrlStr(scheduleEvent.Addressable)

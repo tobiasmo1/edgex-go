@@ -83,7 +83,7 @@ func restAddDeviceProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(dp.Id.Hex()))
+	w.Write([]byte(dp.Id))
 }
 
 func restUpdateDeviceProfile(w http.ResponseWriter, r *http.Request) {
@@ -99,7 +99,7 @@ func restUpdateDeviceProfile(w http.ResponseWriter, r *http.Request) {
 	// Check if the Device Profile exists
 	var to models.DeviceProfile
 	// First try with ID
-	err := dbClient.GetDeviceProfileById(&to, from.Id.Hex())
+	err := dbClient.GetDeviceProfileById(&to, from.Id)
 	if err != nil {
 		// Try with name
 		err = dbClient.GetDeviceProfileByName(&to, from.Name)
@@ -335,7 +335,7 @@ func restDeleteProfileByName(w http.ResponseWriter, r *http.Request) {
 func deleteDeviceProfile(dp models.DeviceProfile, w http.ResponseWriter) error {
 	// Check if the device profile is still in use by devices
 	var d []models.Device
-	if err := dbClient.GetDevicesByProfileId(&d, dp.Id.Hex()); err != nil {
+	if err := dbClient.GetDevicesByProfileId(&d, dp.Id); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return err
 	}
@@ -347,7 +347,7 @@ func deleteDeviceProfile(dp models.DeviceProfile, w http.ResponseWriter) error {
 
 	// Check if the device profile is still in use by provision watchers
 	var pw []models.ProvisionWatcher
-	if err := dbClient.GetProvisionWatchersByProfileId(&pw, dp.Id.Hex()); err != nil {
+	if err := dbClient.GetProvisionWatchersByProfileId(&pw, dp.Id); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return err
 	}
@@ -358,7 +358,7 @@ func deleteDeviceProfile(dp models.DeviceProfile, w http.ResponseWriter) error {
 	}
 
 	// Delete the profile
-	if err := dbClient.DeleteDeviceProfileById(dp.Id.Hex()); err != nil {
+	if err := dbClient.DeleteDeviceProfileById(dp.Id); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return err
 	}
@@ -450,7 +450,7 @@ func addDeviceProfileYaml(data []byte, w http.ResponseWriter) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(dp.Id.Hex()))
+	w.Write([]byte(dp.Id))
 }
 
 func restGetProfileByModel(w http.ResponseWriter, r *http.Request) {
@@ -643,7 +643,7 @@ func restGetYamlProfileById(w http.ResponseWriter, r *http.Request) {
 func notifyProfileAssociates(dp models.DeviceProfile, action string) error {
 	// Get the devices
 	var d []models.Device
-	if err := dbClient.GetDevicesByProfileId(&d, dp.Id.Hex()); err != nil {
+	if err := dbClient.GetDevicesByProfileId(&d, dp.Id); err != nil {
 		LoggingClient.Error(err.Error())
 		return err
 	}
@@ -654,13 +654,13 @@ func notifyProfileAssociates(dp models.DeviceProfile, action string) error {
 	var ds []models.DeviceService
 	for _, device := range d {
 		// Only add if not there
-		if _, ok := dsMap[device.Service.Service.Id.Hex()]; !ok {
-			dsMap[device.Service.Service.Id.Hex()] = device.Service
+		if _, ok := dsMap[device.Service.Service.Id]; !ok {
+			dsMap[device.Service.Service.Id] = device.Service
 			ds = append(ds, device.Service)
 		}
 	}
 
-	if err := notifyAssociates(ds, dp.Id.Hex(), action, models.PROFILE); err != nil {
+	if err := notifyAssociates(ds, dp.Id, action, models.PROFILE); err != nil {
 		LoggingClient.Error(err.Error())
 		return err
 	}

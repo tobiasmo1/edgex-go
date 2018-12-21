@@ -16,12 +16,11 @@ package models
 
 import (
 	"encoding/json"
-	"github.com/globalsign/mgo/bson"
 )
 
 type Service struct {
 	DescribedObject `bson:",inline"`
-	Id              bson.ObjectId  `bson:"_id,omitempty" json:"id"`
+	Id              string         `bson:"_id,omitempty" json:"id"`
 	Name            string         `bson:"name" json:"name"`                     // time in milliseconds that the device last provided any feedback or responded to any request
 	LastConnected   int64          `bson:"lastConnected" json:"lastConnected"`   // time in milliseconds that the device last reported data to the core
 	LastReported    int64          `bson:"lastReported" json:"lastReported"`     // operational state - either enabled or disabled
@@ -34,7 +33,7 @@ type Service struct {
 func (s Service) MarshalJSON() ([]byte, error) {
 	test := struct {
 		DescribedObject `bson:",inline"`
-		Id              *bson.ObjectId `bson:"_id,omitempty" json:"id"`
+		Id              *string        `bson:"_id,omitempty" json:"id"`
 		Name            *string        `bson:"name" json:"name"`                     // time in milliseconds that the device last provided any feedback or responded to any request
 		LastConnected   int64          `bson:"lastConnected" json:"lastConnected"`   // time in milliseconds that the device last reported data to the core
 		LastReported    int64          `bson:"lastReported" json:"lastReported"`     // operational state - either enabled or disabled

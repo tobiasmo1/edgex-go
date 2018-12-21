@@ -40,7 +40,7 @@ func (mds mongoDeviceService) GetBSON() (interface{}, error) {
 		AdminState             models.AdminState     `bson:"adminState"`     // Device Service Admin State
 	}{
 		DescribedObject: mds.Service.DescribedObject,
-		Id:              mds.Service.Id,
+		Id:              bson.ObjectIdHex(mds.Service.Id),
 		Name:            mds.Service.Name,
 		AdminState:      mds.AdminState,
 		OperatingState:  mds.Service.OperatingState,
@@ -72,7 +72,7 @@ func (mds *mongoDeviceService) SetBSON(raw bson.Raw) error {
 
 	// Copy over the non-DBRef fields
 	mds.Service.DescribedObject = decoded.DescribedObject
-	mds.Service.Id = decoded.Id
+	mds.Service.Id = decoded.Id.Hex()
 	mds.Service.Name = decoded.Name
 	mds.AdminState = decoded.AdminState
 	mds.Service.OperatingState = decoded.OperatingState

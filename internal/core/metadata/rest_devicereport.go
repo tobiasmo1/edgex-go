@@ -98,7 +98,7 @@ func restAddDeviceReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(dr.Id.Hex()))
+	w.Write([]byte(dr.Id))
 }
 
 func restUpdateDeviceReport(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +113,7 @@ func restUpdateDeviceReport(w http.ResponseWriter, r *http.Request) {
 	// Check if the device report exists
 	var to models.DeviceReport
 	// First try ID
-	if err := dbClient.GetDeviceReportById(&to, from.Id.Hex()); err != nil {
+	if err := dbClient.GetDeviceReportById(&to, from.Id); err != nil {
 		// Try by name
 		if err = dbClient.GetDeviceReportByName(&to, from.Name); err != nil {
 			if err == db.ErrNotFound {
@@ -354,7 +354,7 @@ func restDeleteReportByName(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteDeviceReport(dr models.DeviceReport, w http.ResponseWriter) error {
-	if err := dbClient.DeleteDeviceReportById(dr.Id.Hex()); err != nil {
+	if err := dbClient.DeleteDeviceReportById(dr.Id); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return err
 	}
@@ -377,7 +377,7 @@ func notifyDeviceReportAssociates(dr models.DeviceReport, action string) error {
 
 	// Get the device service for the device
 	var ds models.DeviceService
-	if err := dbClient.GetDeviceServiceById(&ds, d.Service.Service.Id.Hex()); err != nil {
+	if err := dbClient.GetDeviceServiceById(&ds, d.Service.Service.Id); err != nil {
 		return err
 	}
 
@@ -385,7 +385,7 @@ func notifyDeviceReportAssociates(dr models.DeviceReport, action string) error {
 	services = append(services, ds)
 
 	// Notify the associating device services
-	if err := notifyAssociates(services, dr.Id.Hex(), action, models.REPORT); err != nil {
+	if err := notifyAssociates(services, dr.Id, action, models.REPORT); err != nil {
 		return err
 	}
 
