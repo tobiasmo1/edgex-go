@@ -240,7 +240,6 @@ func loadConfigIntervalActions() error {
 			if errAddIntervalAction != nil {
 				LoggingClient.Error("problem loading interval action into support-scheduler:" + errAddIntervalAction.Error())
 				return errAddIntervalAction
-
 			}
 		} else {
 			LoggingClient.Debug("did not load interval action as it exists in the scheduler database:" + intervalAction.Name)

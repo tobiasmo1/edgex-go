@@ -16,13 +16,11 @@ package models
 
 import (
 	"encoding/json"
-
-	"github.com/globalsign/mgo/bson"
 )
 
 type Schedule struct {
 	BaseObject `bson:",inline"`
-	Id         bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	Id         string        `bson:"_id,omitempty" json:"id"`
 	Name       string        `bson:"name" json:"name"`           // non-database identifier for a shcedule (*must be quitue)
 	Start      string        `bson:"start" json:"start"`         // Start time in ISO 8601 format YYYYMMDD'T'HHmmss 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyymmdd'T'HHmmss")
 	End        string        `bson:"end" json:"end"`             // Start time in ISO 8601 format YYYYMMDD'T'HHmmss 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyymmdd'T'HHmmss")
@@ -35,7 +33,7 @@ type Schedule struct {
 func (s Schedule) MarshalJSON() ([]byte, error) {
 	test := struct {
 		BaseObject
-		Id        bson.ObjectId `json:"id"`
+		Id        *string       `json:"id"`
 		Name      *string       `json:"name"`      // non-database identifier for a shcedule (*must be quitue)
 		Start     *string       `json:"start"`     // Start time in ISO 8601 format YYYYMMDD'T'HHmmss 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyymmdd'T'HHmmss")
 		End       *string       `json:"end"`       // Start time in ISO 8601 format YYYYMMDD'T'HHmmss 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyymmdd'T'HHmmss")
@@ -43,7 +41,7 @@ func (s Schedule) MarshalJSON() ([]byte, error) {
 		Cron      *string       `json:"cron"`      // cron styled regular expression indicating how often the action under schedule should occur.  Use either runOnce, frequency or cron and not all.
 		RunOnce   bool          `json:"runOnce"`   // boolean indicating that this schedules runs one time - at the time indicated by the start
 	}{
-		Id:         s.Id,
+		Id:         &s.Id,
 		BaseObject: s.BaseObject,
 		RunOnce:    s.RunOnce,
 	}
