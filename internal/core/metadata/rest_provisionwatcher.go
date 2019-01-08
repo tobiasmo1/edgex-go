@@ -323,7 +323,7 @@ func restAddProvisionWatcher(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the device profile exists
 	// Try by ID
-	if err = dbClient.GetDeviceProfileById(&pw.Profile, pw.Profile.Id.Hex()); err != nil {
+	if err = dbClient.GetDeviceProfileById(&pw.Profile, pw.Profile.Id); err != nil {
 		// Try by name
 		if err = dbClient.GetDeviceProfileByName(&pw.Profile, pw.Profile.Name); err != nil {
 			if err == db.ErrNotFound {

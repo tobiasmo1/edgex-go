@@ -114,7 +114,7 @@ func getMetadataSchedules() ([]models.Schedule, error) {
 	if receivedSchedules != nil {
 		LoggingClient.Debug("Successfully queried core-metadata schedules...")
 		for _, v := range receivedSchedules {
-			LoggingClient.Debug("found schedule", "id", v.Id.Hex(), "schedule", v.Name, "start", v.Start)
+			LoggingClient.Debug("found schedule", "id", v.Id, "schedule", v.Name, "start", v.Start)
 		}
 	}
 	return receivedSchedules, nil
@@ -134,7 +134,7 @@ func getMetadataScheduleEvents() ([]models.ScheduleEvent, error) {
 	if receivedScheduleEvents != nil {
 		LoggingClient.Debug("Successfully queried core-metadata schedule events...")
 		for _, v := range receivedScheduleEvents {
-			LoggingClient.Debug("found schedule", "id", v.Id.Hex(), "event", v.Name, "schedule", v.Schedule, "service", v.Service)
+			LoggingClient.Debug("found schedule", "id", v.Id, "event", v.Name, "schedule", v.Schedule, "service", v.Service)
 		}
 	}
 
@@ -158,7 +158,7 @@ func addReceivedSchedules(schedules []models.Schedule) error {
 				LoggingClient.Error("error adding core-metadata schedule", "schedule", schedule.Name, "message", err.Error())
 				return err
 			}
-			LoggingClient.Info("associated schedule name and id", "schedule", schedule.Name, "id", schedule.Id.Hex())
+			LoggingClient.Info("associated schedule name and id", "schedule", schedule.Name, "id", schedule.Id)
 		}
 	}
 	return nil
@@ -181,7 +181,7 @@ func addReceivedScheduleEvents(scheduleEvents []models.ScheduleEvent) error {
 				LoggingClient.Error("error adding core-metadata schedule event", "event", scheduleEvent.Name, "message", err.Error())
 				return err
 			}
-			LoggingClient.Info("added event to schedule", "event", scheduleEvent.Name, "schedule", scheduleEvent.Schedule, "id", scheduleEvent.Id.Hex())
+			LoggingClient.Info("added event to schedule", "event", scheduleEvent.Name, "schedule", scheduleEvent.Schedule, "id", scheduleEvent.Id)
 		}
 	}
 

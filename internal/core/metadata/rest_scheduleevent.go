@@ -878,7 +878,7 @@ func notifyScheduleAssociates(s models.Schedule, action string) error {
 	}
 
 	// Notify the associated device services
-	if err = notifyAssociates(services, s.Id.Hex(), action, models.SCHEDULE); err != nil {
+	if err = notifyAssociates(services, s.Id, action, models.SCHEDULE); err != nil {
 		return err
 	}
 
@@ -899,7 +899,7 @@ func notifyScheduleEventAssociates(se models.ScheduleEvent, action string) error
 	services = append(services, ds)
 
 	// Notify the associated device service
-	if err = notifyAssociates(services, se.Id.Hex(), action, models.SCHEDULEEVENT); err != nil {
+	if err = notifyAssociates(services, se.Id, action, models.SCHEDULEEVENT); err != nil {
 		return err
 	}
 

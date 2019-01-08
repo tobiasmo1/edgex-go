@@ -41,7 +41,7 @@ func (mds mongoDeviceService) GetBSON() (interface{}, error) {
 		AdminState             contract.AdminState     `bson:"adminState"`     // Device Service Admin State
 	}{
 		DescribedObject: mds.Service.DescribedObject,
-		Id:              bson.ObjectIdHex(mds.Service.Id),
+		Id:              mds.Service.Id,
 		Name:            mds.Service.Name,
 		AdminState:      mds.AdminState,
 		OperatingState:  mds.Service.OperatingState,

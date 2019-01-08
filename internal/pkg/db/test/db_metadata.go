@@ -705,7 +705,7 @@ func testDBDeviceService(t *testing.T, db interfaces.DBClient) {
 		t.Fatalf("There should be 0 deviceServices instead of %d", len(deviceServices))
 	}
 
-	ds.Id = id.Hex()
+	ds.Id = id
 	ds.Name = "name"
 	err = db.UpdateDeviceService(ds)
 	if err != nil {
@@ -848,7 +848,7 @@ func testDBDeviceReport(t *testing.T, db interfaces.DBClient) {
 		t.Fatalf("Error getting deviceReport by id %v", err)
 	}
 	if e.Name != "name1" {
-		t.Fatalf("Id does not match %s - %s", e.Id, id.Hex())
+		t.Fatalf("Id does not match %s - %s", e.Id, id)
 	}
 	e, err = db.GetDeviceReportByName("INVALID")
 	if err == nil {
@@ -888,7 +888,7 @@ func testDBDeviceReport(t *testing.T, db interfaces.DBClient) {
 	}
 
 	e2 := models.DeviceReport{}
-	e2.Id = id.Hex()
+	e2.Id = id
 	e2.Name = "name"
 	err = db.UpdateDeviceReport(e2)
 	if err != nil {

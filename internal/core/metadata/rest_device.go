@@ -1195,12 +1195,8 @@ func notifyDeviceAssociates(d models.Device, action string) error {
 
 	// Callback for device service
 	var ds models.DeviceService
-<<<<<<< HEAD
-	if err := dbClient.GetDeviceServiceById(&ds, d.Service.Service.Id); err != nil {
-=======
 	var err error
 	if ds, err = dbClient.GetDeviceServiceById(d.Service.Service.Id); err != nil {
->>>>>>> 259da289a9b65e406b8be93641a50bcfadd05a82
 		LoggingClient.Error(err.Error())
 		return err
 	}
