@@ -24,7 +24,6 @@ import (
 	"github.com/edgexfoundry/edgex-go/internal/pkg/config"
 	"github.com/edgexfoundry/edgex-go/internal/pkg/consul"
 	"github.com/edgexfoundry/edgex-go/internal/pkg/db"
-	"github.com/edgexfoundry/edgex-go/internal/pkg/db/memory"
 	"github.com/edgexfoundry/edgex-go/internal/pkg/db/mongo"
 	"github.com/edgexfoundry/edgex-go/internal/pkg/startup"
 	"github.com/edgexfoundry/edgex-go/pkg/clients"
@@ -130,22 +129,14 @@ func connectToDatabase() error {
 		return fmt.Errorf("couldn't create database client: %v", err.Error())
 	}
 
-	// Connect to the database
-	err = dbClient.Connect()
-	if err != nil {
-		dbClient = nil
-		return fmt.Errorf("couldn't connect to database: %v", err.Error())
-	}
-	return nil
+	return err
 }
 
 // Return the dbClient interface
 func newDBClient(dbType string, config db.Configuration) (interfaces.DBClient, error) {
 	switch dbType {
 	case db.MongoDB:
-		return mongo.NewClient(config), nil
-	case db.MemoryDB:
-		return &memory.MemDB{}, nil
+		return mongo.NewClient(config)
 	default:
 		return nil, db.ErrUnsupportedDatabase
 	}

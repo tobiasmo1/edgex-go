@@ -217,8 +217,7 @@ func isAddressableStillInUse(a models.Addressable) (bool, error) {
 	}
 
 	// Check device services
-	var ds []models.DeviceService
-	err = dbClient.GetDeviceServicesByAddressableId(&ds, a.Id)
+	ds, err := dbClient.GetDeviceServicesByAddressableId(a.Id)
 	if err != nil {
 		return false, err
 	}

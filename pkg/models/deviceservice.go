@@ -20,12 +20,11 @@ import (
 
 type DeviceService struct {
 	Service
-	AdminState AdminState `bson:"adminState" json:"adminState"` // Device Service Admin State
+	AdminState AdminState `json:"adminState"` // Device Service Admin State
 }
 
 // Custom Marshaling to make empty strings null
 func (ds DeviceService) MarshalJSON() ([]byte, error) {
-
 	test := struct {
 		DescribedObject `json:",inline"`
 		Id              *string        `json:"id"`
@@ -62,7 +61,7 @@ func (ds DeviceService) MarshalJSON() ([]byte, error) {
 func (ds *DeviceService) UnmarshalJSON(data []byte) error {
 	type Alias struct {
 		DescribedObject `json:",inline"`
-		Id              *string        `json:"id"`
+		Id              string         `json:"id"`
 		Name            *string        `json:"name"`           // time in milliseconds that the device last provided any feedback or responded to any request
 		LastConnected   int64          `json:"lastConnected"`  // time in milliseconds that the device last reported data to the core
 		LastReported    int64          `json:"lastReported"`   // operational state - either enabled or disabled
@@ -86,7 +85,7 @@ func (ds *DeviceService) UnmarshalJSON(data []byte) error {
 	ds.OperatingState = a.OperatingState
 	ds.Labels = a.Labels
 	ds.Addressable = a.Addressable
-	ds.Id = *a.Id
+	ds.Id = a.Id
 
 	// Name can be nil
 	if a.Name != nil {

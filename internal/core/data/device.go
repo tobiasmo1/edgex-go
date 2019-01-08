@@ -85,7 +85,6 @@ func updateDeviceServiceLastReportedConnected(device string) {
 	msc.UpdateLastReported(s.Service.Id, t)
 }
 
-
 func checkMaxLimit(limit int) error {
 	if limit > Configuration.Service.ReadMaxLimit {
 		LoggingClient.Error(maxExceededString)

@@ -20,8 +20,6 @@ import (
 type DBClient interface {
 	CloseSession()
 
-	Connect() error
-
 	// Schedule event
 	GetAllScheduleEvents(se *[]contract.ScheduleEvent) error
 	AddScheduleEvent(se *contract.ScheduleEvent) error
@@ -42,13 +40,13 @@ type DBClient interface {
 	DeleteScheduleById(id string) error
 
 	// Device Report
-	GetAllDeviceReports(dr *[]contract.DeviceReport) error
-	GetDeviceReportByDeviceName(dr *[]contract.DeviceReport, n string) error
-	GetDeviceReportByName(dr *contract.DeviceReport, n string) error
-	GetDeviceReportById(dr *contract.DeviceReport, id string) error
-	AddDeviceReport(dr *contract.DeviceReport) error
-	UpdateDeviceReport(dr *contract.DeviceReport) error
-	GetDeviceReportsByScheduleEventName(dr *[]contract.DeviceReport, n string) error
+	GetAllDeviceReports() ([]contract.DeviceReport, error)
+	GetDeviceReportByDeviceName(n string) ([]contract.DeviceReport, error)
+	GetDeviceReportByName(n string) (contract.DeviceReport, error)
+	GetDeviceReportById(id string) (contract.DeviceReport, error)
+	AddDeviceReport(dr contract.DeviceReport) (string, error)
+	UpdateDeviceReport(dr contract.DeviceReport) error
+	GetDeviceReportsByScheduleEventName(n string) ([]contract.DeviceReport, error)
 	DeleteDeviceReportById(id string) error
 
 	// Device
@@ -88,12 +86,12 @@ type DBClient interface {
 
 	// Device service
 	UpdateDeviceService(ds contract.DeviceService) error
-	GetDeviceServicesByAddressableId(d *[]contract.DeviceService, id string) error
-	GetDeviceServicesWithLabel(d *[]contract.DeviceService, l string) error
-	GetDeviceServiceById(d *contract.DeviceService, id string) error
-	GetDeviceServiceByName(d *contract.DeviceService, n string) error
-	GetAllDeviceServices(d *[]contract.DeviceService) error
-	AddDeviceService(ds *contract.DeviceService) error
+	GetDeviceServicesByAddressableId(id string) ([]contract.DeviceService, error)
+	GetDeviceServicesWithLabel(l string) ([]contract.DeviceService, error)
+	GetDeviceServiceById(id string) (contract.DeviceService, error)
+	GetDeviceServiceByName(n string) (contract.DeviceService, error)
+	GetAllDeviceServices() ([]contract.DeviceService, error)
+	AddDeviceService(ds contract.DeviceService) (string, error)
 	DeleteDeviceServiceById(id string) error
 
 	// Provision watcher
@@ -108,11 +106,11 @@ type DBClient interface {
 	DeleteProvisionWatcherById(id string) error
 
 	// Command
-	GetCommandById(c *contract.Command, id string) error
-	GetCommandByName(c *[]contract.Command, id string) error
-	AddCommand(c *contract.Command) error
-	GetAllCommands(d *[]contract.Command) error
-	UpdateCommand(c *contract.Command, r *contract.Command) error
+	GetCommandById(id string) (contract.Command, error)
+	GetCommandByName(id string) ([]contract.Command, error)
+	AddCommand(c contract.Command) (string, error)
+	GetAllCommands() ([]contract.Command, error)
+	UpdateCommand(c *contract.Command) error
 	DeleteCommandById(id string) error
 
 	// Scrub all metadata (only used in test)

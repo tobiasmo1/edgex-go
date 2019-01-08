@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Dell Inc.
+ * Copyright 2019 Dell Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -12,30 +12,29 @@
  * the License.
  *******************************************************************************/
 
-package logger
+package models
 
-type MockLogger struct {
+import (
+	contract "github.com/edgexfoundry/edgex-go/pkg/models"
+)
+
+type DeviceService struct {
+	Service    `bson:",inline"`
+	AdminState contract.AdminState `bson:"adminState"` // Device Service Admin State
 }
 
-func NewMockClient() LoggingClient {
-	return MockLogger{}
+func (ds *DeviceService) ToContract() contract.DeviceService {
+	return contract.DeviceService{
+		Service:    ds.Service.ToContract(),
+		AdminState: ds.AdminState,
+	}
 }
 
-func (lc MockLogger) SetLogLevel(loglevel string) error {
+func (ds *DeviceService) FromContract(from contract.DeviceService) error {
+	var err error
+	if err = ds.Service.FromContract(from.Service); err != nil {
+		return err
+	}
+	ds.AdminState = from.AdminState
 	return nil
-}
-
-func (lc MockLogger) Info(msg string, args ...interface{}) {
-}
-
-func (lc MockLogger) Debug(msg string, args ...interface{}) {
-}
-
-func (lc MockLogger) Error(msg string, args ...interface{}) {
-}
-
-func (lc MockLogger) Trace(msg string, args ...interface{}) {
-}
-
-func (lc MockLogger) Warn(msg string, args ...interface{}) {
 }

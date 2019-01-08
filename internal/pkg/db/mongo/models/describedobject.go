@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Dell Inc.
+ * Copyright 2019 Dell Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -12,30 +12,32 @@
  * the License.
  *******************************************************************************/
 
-package logger
+package models
 
-type MockLogger struct {
+import contract "github.com/edgexfoundry/edgex-go/pkg/models"
+
+type DescribedObject struct {
+	Created  int64 `bson:"created"`
+	Modified int64 `bson:"modified"`
+	Origin   int64 `bson:"origin"`
+
+	Description string `bson:"description"`
 }
 
-func NewMockClient() LoggingClient {
-	return MockLogger{}
+func (do *DescribedObject) ToContract() contract.DescribedObject {
+	var to contract.DescribedObject
+
+	to.Created = do.Created
+	to.Modified = do.Modified
+	to.Origin = do.Origin
+	to.Description = do.Description
+
+	return to
 }
 
-func (lc MockLogger) SetLogLevel(loglevel string) error {
-	return nil
-}
-
-func (lc MockLogger) Info(msg string, args ...interface{}) {
-}
-
-func (lc MockLogger) Debug(msg string, args ...interface{}) {
-}
-
-func (lc MockLogger) Error(msg string, args ...interface{}) {
-}
-
-func (lc MockLogger) Trace(msg string, args ...interface{}) {
-}
-
-func (lc MockLogger) Warn(msg string, args ...interface{}) {
+func (do *DescribedObject) FromContract(from contract.DescribedObject) {
+	do.Created = from.Created
+	do.Modified = from.Modified
+	do.Origin = from.Origin
+	do.Description = from.Description
 }
