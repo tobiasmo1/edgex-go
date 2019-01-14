@@ -16,13 +16,11 @@ package models
 
 import (
 	"encoding/json"
-
-	"github.com/globalsign/mgo/bson"
 )
 
 type ScheduleEvent struct {
 	BaseObject  `bson:",inline"`
-	Id          bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	Id          string        `bson:"_id,omitempty" json:"id"`
 	Name        string        `bson:"name" json:"name"`               // non-database unique identifier for a schedule event
 	Schedule    string        `bson:"schedule" json:"schedule"`       // Name to associated owning schedule
 	Addressable Addressable   `bson:"addressable" json:"addressable"` // address {MQTT topic, HTTP address, serial bus, etc.} for the action (can be empty)
@@ -34,14 +32,14 @@ type ScheduleEvent struct {
 func (se ScheduleEvent) MarshalJSON() ([]byte, error) {
 	test := struct {
 		BaseObject
-		Id          bson.ObjectId `json:"id"`
+		Id          *string       `json:"id"`
 		Name        *string       `json:"name"`        // non-database unique identifier for a schedule event
 		Schedule    *string       `json:"schedule"`    // Name to associated owning schedule
 		Addressable Addressable   `json:"addressable"` // address {MQTT topic, HTTP address, serial bus, etc.} for the action (can be empty)
 		Parameters  *string       `json:"parameters"`  // json body for parameters
 		Service     *string       `json:"service"`     // json body for parameters
 	}{
-		Id:          se.Id,
+		Id:          &se.Id,
 		BaseObject:  se.BaseObject,
 		Addressable: se.Addressable,
 	}

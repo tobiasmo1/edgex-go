@@ -31,7 +31,7 @@ type mongoDevice struct {
 // This struct is used by MongoDeviceManager so that it can call GetBSON explicitly on MongoDevice
 type mongoDeviceBSON struct {
 	contract.DescribedObject `bson:",inline"`
-	Id                       bson.ObjectId           `bson:"_id,omitempty"`
+	Id                       string                  `bson:"_id,omitempty"`
 	Name                     string                  `bson:"name"`           // Unique name for identifying a device
 	AdminState               contract.AdminState     `bson:"adminState"`     // Admin state (locked/unlocked)
 	OperatingState           contract.OperatingState `bson:"operatingState"` // Operating state (enabled/disabled)
@@ -66,7 +66,7 @@ func (md mongoDevice) GetBSON() (interface{}, error) {
 func (md *mongoDevice) SetBSON(raw bson.Raw) error {
 	decoded := new(struct {
 		contract.DescribedObject `bson:",inline"`
-		Id                       bson.ObjectId           `bson:"_id,omitempty"`
+		Id                       string                  `bson:"_id,omitempty"`
 		Name                     string                  `bson:"name"`           // Unique name for identifying a device
 		AdminState               contract.AdminState     `bson:"adminState"`     // Admin state (locked/unlocked)
 		OperatingState           contract.OperatingState `bson:"operatingState"` // Operating state (enabled/disabled)

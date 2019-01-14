@@ -135,7 +135,7 @@ func restAddScheduleEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(se.Id.Hex()))
+	w.Write([]byte(se.Id))
 }
 
 func restUpdateScheduleEvent(w http.ResponseWriter, r *http.Request) {
@@ -179,7 +179,7 @@ func restUpdateScheduleEvent(w http.ResponseWriter, r *http.Request) {
 func getScheduleEventByIdOrName(from models.ScheduleEvent, w http.ResponseWriter) (models.ScheduleEvent, error) {
 	var se models.ScheduleEvent
 	// Try by ID
-	if err := dbClient.GetScheduleEventById(&se, from.Id.Hex()); err != nil {
+	if err := dbClient.GetScheduleEventById(&se, from.Id); err != nil {
 		// Try by Name
 		if err = dbClient.GetScheduleEventByName(&se, from.Name); err != nil {
 			if err == db.ErrNotFound {
@@ -391,7 +391,7 @@ func deleteScheduleEvent(se models.ScheduleEvent, w http.ResponseWriter) error {
 		return err
 	}
 
-	if err := dbClient.DeleteScheduleEventById(se.Id.Hex()); err != nil {
+	if err := dbClient.DeleteScheduleEventById(se.Id); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return err
 	}
@@ -603,7 +603,7 @@ func restAddSchedule(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(s.Id.Hex()))
+	w.Write([]byte(s.Id))
 }
 
 // Update a schedule
@@ -621,7 +621,7 @@ func restUpdateSchedule(w http.ResponseWriter, r *http.Request) {
 	// Check if the schedule exists
 	var to models.Schedule
 	// Try by ID
-	if err := dbClient.GetScheduleById(&to, from.Id.Hex()); err != nil {
+	if err := dbClient.GetScheduleById(&to, from.Id); err != nil {
 		// Try by name
 		if err = dbClient.GetScheduleByName(&to, from.Name); err != nil {
 			LoggingClient.Error("Schedule not found: " + err.Error())
@@ -836,7 +836,7 @@ func deleteSchedule(s models.Schedule, w http.ResponseWriter) error {
 		return err
 	}
 
-	if err := dbClient.DeleteScheduleById(s.Id.Hex()); err != nil {
+	if err := dbClient.DeleteScheduleById(s.Id); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return err
 	}
@@ -878,7 +878,7 @@ func notifyScheduleAssociates(s models.Schedule, action string) error {
 	}
 
 	// Notify the associated device services
-	if err = notifyAssociates(services, s.Id.Hex(), action, models.SCHEDULE); err != nil {
+	if err = notifyAssociates(services, s.Id, action, models.SCHEDULE); err != nil {
 		return err
 	}
 
@@ -899,7 +899,7 @@ func notifyScheduleEventAssociates(se models.ScheduleEvent, action string) error
 	services = append(services, ds)
 
 	// Notify the associated device service
-	if err = notifyAssociates(services, se.Id.Hex(), action, models.SCHEDULEEVENT); err != nil {
+	if err = notifyAssociates(services, se.Id, action, models.SCHEDULEEVENT); err != nil {
 		return err
 	}
 

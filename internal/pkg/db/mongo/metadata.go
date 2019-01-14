@@ -16,6 +16,7 @@ package mongo
 import (
 	"errors"
 	"fmt"
+
 	"github.com/globalsign/mgo"
 
 	"github.com/edgexfoundry/edgex-go/internal/pkg/db"
@@ -52,7 +53,7 @@ func (m MongoClient) AddScheduleEvent(se *contract.ScheduleEvent) error {
 	ts := db.MakeTimestamp()
 	se.Created = ts
 	se.Modified = ts
-	se.Id = bson.NewObjectId()
+	se.Id = bson.NewObjectId().Hex()
 
 	// Handle DBRefs
 	mse := mongoScheduleEvent{ScheduleEvent: *se}
@@ -167,7 +168,7 @@ func (m MongoClient) AddSchedule(sch *contract.Schedule) error {
 	ts := db.MakeTimestamp()
 	sch.Created = ts
 	sch.Modified = ts
-	sch.Id = bson.NewObjectId()
+	sch.Id = bson.NewObjectId().Hex()
 	return col.Insert(sch)
 }
 
@@ -329,7 +330,7 @@ func (m MongoClient) AddDevice(d *contract.Device) error {
 	ts := db.MakeTimestamp()
 	d.Created = ts
 	d.Modified = ts
-	d.Id = bson.NewObjectId()
+	d.Id = bson.NewObjectId().Hex()
 
 	addr, err := m.getAddressableByName(d.Addressable.Name)
 	if err != nil {
@@ -547,7 +548,7 @@ func (m MongoClient) AddDeviceProfile(dp *contract.DeviceProfile) error {
 	ts := db.MakeTimestamp()
 	dp.Created = ts
 	dp.Modified = ts
-	dp.Id = bson.NewObjectId()
+	dp.Id = bson.NewObjectId().Hex()
 
 	mdp := mongoDeviceProfile{DeviceProfile: *dp}
 
@@ -999,8 +1000,8 @@ func (m MongoClient) AddProvisionWatcher(pw *contract.ProvisionWatcher) error {
 
 	// get Device Profile
 	var dp contract.DeviceProfile
-	if pw.Profile.Id.Hex() != "" {
-		m.GetDeviceProfileById(&dp, pw.Profile.Id.Hex())
+	if pw.Profile.Id != "" {
+		m.GetDeviceProfileById(&dp, pw.Profile.Id)
 	} else if pw.Profile.Name != "" {
 		m.GetDeviceProfileByName(&dp, pw.Profile.Name)
 	} else {

@@ -16,7 +16,6 @@ package models
 
 import (
 	"encoding/json"
-	"github.com/globalsign/mgo/bson"
 )
 
 /*
@@ -27,7 +26,7 @@ import (
  */
 type DeviceProfile struct {
 	DescribedObject `bson:",inline" yaml:",inline"`
-	Id              bson.ObjectId     `bson:"_id,omitempty" json:"id"`
+	Id              string            `bson:"_id,omitempty" json:"id"`
 	Name            string            `bson:"name" json:"name" yaml:"name"`                         // Non-database identifier (must be unique)
 	Manufacturer    string            `bson:"manufacturer" json:"manufacturer" yaml:"manufacturer"` // Manufacturer of the device
 	Model           string            `bson:"model" json:"model" yaml:"model"`                      // Model of the device
@@ -42,7 +41,7 @@ type DeviceProfile struct {
 func (dp DeviceProfile) MarshalJSON() ([]byte, error) {
 	test := struct {
 		DescribedObject
-		Id              bson.ObjectId     `json:"id"`
+		Id              *string           `json:"id"`
 		Name            *string           `json:"name"`         // Non-database identifier (must be unique)
 		Manufacturer    *string           `json:"manufacturer"` // Manufacturer of the device
 		Model           *string           `json:"model"`        // Model of the device
@@ -52,7 +51,7 @@ func (dp DeviceProfile) MarshalJSON() ([]byte, error) {
 		Resources       []ProfileResource `json:"resources"`
 		Commands        []Command         `json:"commands"` // List of commands to Get/Put information for devices associated with this profile
 	}{
-		Id:              dp.Id,
+		Id:              &dp.Id,
 		Labels:          dp.Labels,
 		DescribedObject: dp.DescribedObject,
 		Objects:         dp.Objects,

@@ -98,7 +98,7 @@ func restAddNewDevice(w http.ResponseWriter, r *http.Request) {
 	err = dbClient.GetDeviceProfileByName(&d.Profile, d.Profile.Name)
 	if err != nil {
 		// Try by ID
-		err = dbClient.GetDeviceProfileById(&d.Profile, d.Profile.Id.Hex())
+		err = dbClient.GetDeviceProfileById(&d.Profile, d.Profile.Id)
 		if err != nil {
 			LoggingClient.Error(err.Error())
 			http.Error(w, err.Error()+": A device must be associated with a device profile", http.StatusBadRequest)
@@ -130,7 +130,7 @@ func restAddNewDevice(w http.ResponseWriter, r *http.Request) {
 	notifyDeviceAssociates(d, http.MethodPost)
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(d.Id.Hex()))
+	w.Write([]byte(d.Id))
 }
 
 // Update the device
@@ -149,7 +149,7 @@ func restUpdateDevice(w http.ResponseWriter, r *http.Request) {
 	// Check if the device exists
 	var oldDevice models.Device
 	// First try ID
-	err = dbClient.GetDeviceById(&oldDevice, rd.Id.Hex())
+	err = dbClient.GetDeviceById(&oldDevice, rd.Id)
 	if err != nil {
 		// Then try name
 		err = dbClient.GetDeviceByName(&oldDevice, rd.Name)
@@ -215,7 +215,7 @@ func updateDeviceFields(from models.Device, to *models.Device) error {
 		// Check if the new profile exists
 		var dp models.DeviceProfile
 		// Try ID first
-		err := dbClient.GetDeviceProfileById(&dp, from.Profile.Id.Hex())
+		err := dbClient.GetDeviceProfileById(&dp, from.Profile.Id)
 		if err != nil {
 			// Then try Name
 			err = dbClient.GetDeviceProfileByName(&dp, from.Profile.Name)
@@ -453,7 +453,7 @@ func restGetDeviceByProfileName(w http.ResponseWriter, r *http.Request) {
 	res := make([]models.Device, 0)
 
 	// Use profile ID now that you have the profile object
-	err = dbClient.GetDevicesByProfileId(&res, dp.Id.Hex())
+	err = dbClient.GetDevicesByProfileId(&res, dp.Id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		LoggingClient.Error(err.Error())
@@ -789,7 +789,7 @@ func deleteDevice(d models.Device, w http.ResponseWriter) error {
 		return err
 	}
 
-	if err := dbClient.DeleteDeviceById(d.Id.Hex()); err != nil {
+	if err := dbClient.DeleteDeviceById(d.Id); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return err
 	}
@@ -1203,7 +1203,7 @@ func notifyDeviceAssociates(d models.Device, action string) error {
 	}
 	var services []models.DeviceService
 	services = append(services, ds)
-	if err := notifyAssociates(services, d.Id.Hex(), action, models.DEVICE); err != nil {
+	if err := notifyAssociates(services, d.Id, action, models.DEVICE); err != nil {
 		LoggingClient.Error(err.Error())
 		return err
 	}
