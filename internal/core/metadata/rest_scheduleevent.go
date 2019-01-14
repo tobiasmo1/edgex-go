@@ -877,10 +877,7 @@ func notifyScheduleAssociates(s models.Schedule, action string) error {
 		services = append(services, ds)
 	}
 
-<<<<<<< cfedd49d0b2b1f1bf77bfc5835d9d4b670d43c34
-=======
 	// Notify the associated device services
->>>>>>> Align with edgex-go/master, with merge remedies to date
 	if err = notifyAssociates(services, s.Id, action, models.SCHEDULE); err != nil {
 		return err
 	}

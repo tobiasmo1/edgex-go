@@ -16,6 +16,7 @@ package mongo
 import (
 	"errors"
 	"fmt"
+
 	"github.com/globalsign/mgo"
 
 	"github.com/edgexfoundry/edgex-go/internal/pkg/db"
