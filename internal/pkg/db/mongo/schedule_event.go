@@ -14,6 +14,7 @@
 package mongo
 
 import (
+ 	"fmt"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 
@@ -29,7 +30,7 @@ type mongoScheduleEvent struct {
 
 // Custom marshaling into mongo
 func (mse mongoScheduleEvent) GetBSON() (interface{}, error) {
-	return struct {
+	se := struct {
 		models.BaseObject `bson:",inline"`
 		Id                string `bson:"_id,omitempty"`
 		Name              string        `bson:"name"`        // non-database unique identifier for a schedule event
@@ -44,7 +45,19 @@ func (mse mongoScheduleEvent) GetBSON() (interface{}, error) {
 		Parameters:  mse.Parameters,
 		Service:     mse.Service,
 		Addressable: mgo.DBRef{Collection: db.Addressable, Id: mse.Addressable.Id},
-	}, nil
+	}
+	// What is current value for 
+	// se.Addressable.HTTPMethod = mse.Addressable.HTTPMethod
+	fmt.Println("Assigned DBREF FOR ADDRESSABLE ID %v", se)
+
+/*RESULT looks like this:
+level=WARN ts=2019-02-28T08:29:19.44079761Z app=edgex-core-metadata source=rest_scheduleevent.go:110 msg="STATUS: CALLED GetAddressableById for se.Addressable.Id"
+Assigning DBREF FOR ADDRESSABLE ID %v {{0 0 0} 75f3c0ea-a29b-4eed-8cb4-8551f0561a46 
+turnOnSwitch 10sec-schedule 
+{addressable ba271fdb-a579-4d5b-a21d-13a00466e21a } 
+{"Switch": "true"} device-simple}
+*/
+	return se, nil
 }
 
 // Custom unmarshaling out of mongo
@@ -63,6 +76,7 @@ func (mse *mongoScheduleEvent) SetBSON(raw bson.Raw) error {
 	if bsonErr != nil {
 		return bsonErr
 	}
+	fmt.Println("RAW DECODED BSON [%v]", decoded)
 
 	// Copy over the non-DBRef fields
 	mse.Id = decoded.Id
@@ -83,13 +97,23 @@ func (mse *mongoScheduleEvent) SetBSON(raw bson.Raw) error {
 
 	var a models.Addressable
 
-	err = addCol.Find(bson.M{"_id": decoded.Addressable.Id}).One(&a)
+// This find does not fetch the complete models.Addressable.
+// It is a direct query, but in Go it is missing Addressable.HTTPMethod...
+//
+// Local mongo shell (same DB) works!
+// db.addressable.find({uuid: {$eq:"d1294a5f-7932-441d-b7da-756f3d8cc51a"}})
+	err = addCol.Find(bson.D{{Name: "uuid", Value: decoded.Addressable.Id}}).One(&a)
 	if err == mgo.ErrNotFound {
-		err = addCol.Find(bson.M{"uuid": decoded.Addressable.Id}).One(&a)
+		fmt.Println("FAILED TO FIND DBREF BY ADDRESSABLE UUID, TRYING _ID")
+		err = addCol.Find(bson.M{"_id": decoded.Addressable.Id}).One(&a)
+		if err == mgo.ErrNotFound {
+			fmt.Println("FAILED TO FIND DBREF BY ADDRESSABLE _ID")
+		}
 	}
 	if err != nil {
 		return err
 	}
+	fmt.Println("BSON Addressable DBREF RESOLUTION (By UUID) via GLOBALSIGN/MGO [%v]", a)
 
 	mse.Addressable = a
 

@@ -105,11 +105,14 @@ func restAddScheduleEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check for the addressable
-	// Try by ID
+	// TJM: Try by ID first
 	a, err := dbClient.GetAddressableById(se.Addressable.Id)
+LoggingClient.Warn("TJM: CALLED GetAddressableById for se.Addressable.Id")
 	if err != nil {
+LoggingClient.Warn("TJM: GetAddressableById did NOT succeed")
 		// Try by Name
 		if a, err = dbClient.GetAddressableByName(se.Addressable.Name); err != nil {
+LoggingClient.Warn("STATUS: GetAddressableByName did NOT succeed")
 			http.Error(w, "Address not found for schedule event", http.StatusNotFound)
 			LoggingClient.Error("Addressable for schedule event not found: " + err.Error())
 			return
@@ -181,10 +184,10 @@ func getScheduleEventByIdOrName(from models.ScheduleEvent, w http.ResponseWriter
 		// Try by Name
 		if err = dbClient.GetScheduleEventByName(&se, from.Name); err != nil {
 			if err == db.ErrNotFound {
-				http.Error(w, "Schedule Event not found", http.StatusNotFound)
+				http.Error(w, "Schedule Event ByName not found", http.StatusNotFound)
 				LoggingClient.Error(err.Error())
 			} else {
-				LoggingClient.Error("Problem getting schedule event: " + err.Error())
+				LoggingClient.Error("Problem getting schedule event ByName or ByID: " + err.Error())
 				http.Error(w, err.Error(), http.StatusServiceUnavailable)
 			}
 			return se, err
@@ -306,11 +309,11 @@ func restGetScheduleEventByName(w http.ResponseWriter, r *http.Request) {
 	err = dbClient.GetScheduleEventByName(&res, n)
 	if err != nil {
 		if err == db.ErrNotFound {
-			http.Error(w, "Schedule event not found", http.StatusNotFound)
-			LoggingClient.Error("Schedule event not found: " + err.Error())
+			http.Error(w, "Schedule event ByName not found", http.StatusNotFound)
+			LoggingClient.Error("Schedule event ByName not found: " + err.Error())
 		} else {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			LoggingClient.Error("Problem getting schedule event: " + err.Error())
+			LoggingClient.Error("Problem getting schedule event ByName: " + err.Error())
 		}
 		return
 	}
@@ -327,8 +330,8 @@ func restDeleteScheduleEventById(w http.ResponseWriter, r *http.Request) {
 	var se models.ScheduleEvent
 	err := dbClient.GetScheduleEventById(&se, id)
 	if err != nil {
-		http.Error(w, "Schedule event not found", http.StatusNotFound)
-		LoggingClient.Error("Schedule event not found: " + err.Error())
+		http.Error(w, "Schedule event ByID in Del not found", http.StatusNotFound)
+		LoggingClient.Error("Schedule event ByID in Del not found: " + err.Error())
 		return
 	}
 
@@ -355,10 +358,10 @@ func restDeleteScheduleEventByName(w http.ResponseWriter, r *http.Request) {
 	var se models.ScheduleEvent
 	if err := dbClient.GetScheduleEventByName(&se, n); err != nil {
 		if err == db.ErrNotFound {
-			http.Error(w, "Schedule event not found", http.StatusNotFound)
-			LoggingClient.Error("Schedule event not found: " + err.Error())
+			http.Error(w, "Schedule event ByName in Del not found", http.StatusNotFound)
+			LoggingClient.Error("Schedule event ByName in Del not found: " + err.Error())
 		} else {
-			LoggingClient.Error("Problem getting schedule event: " + err.Error())
+			LoggingClient.Error("Problem getting schedule event ByName in Del: " + err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -409,10 +412,10 @@ func restGetScheduleEventById(w http.ResponseWriter, r *http.Request) {
 	err := dbClient.GetScheduleEventById(&res, did)
 	if err != nil {
 		if err == db.ErrNotFound {
-			http.Error(w, "Schedule event not found", http.StatusNotFound)
-			LoggingClient.Error("Schedule event not found: " + err.Error())
+			http.Error(w, "GetByID Schedule event not found", http.StatusNotFound)
+			LoggingClient.Error("GetByID Schedule event not found: " + err.Error())
 		} else {
-			LoggingClient.Error("Problem getting schedule event: " + err.Error())
+			LoggingClient.Error("Problem getting schedule event ByID: " + err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -515,7 +518,7 @@ func restGetScheduleEventsByServiceName(w http.ResponseWriter, r *http.Request) 
 	// Get the schedule events
 	if err = dbClient.GetScheduleEventsByServiceName(&res, sn); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
-		LoggingClient.Error("Problem getting schedule events: " + err.Error())
+		LoggingClient.Error("Problem getting schedule events ByServiceName: " + err.Error())
 		return
 	}
 

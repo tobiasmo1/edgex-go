@@ -104,6 +104,7 @@ func (mc MongoClient) getScheduleEvents(se *[]contract.ScheduleEvent, q bson.M) 
 	col := s.DB(mc.database.Name).C(db.ScheduleEvent)
 
 	var mses []mongoScheduleEvent
+
 	if err := col.Find(q).Sort("queryts").All(&mses); err != nil {
 		return errorMap(err)
 	}
@@ -111,6 +112,7 @@ func (mc MongoClient) getScheduleEvents(se *[]contract.ScheduleEvent, q bson.M) 
 	*se = []contract.ScheduleEvent{}
 	for _, mse := range mses {
 		*se = append(*se, mse.ScheduleEvent)
+		fmt.Println("TJM: FETCHED SCHEDULEEVENT (WITH DBREF RESOLUTION) %v", mse.ScheduleEvent)
 	}
 
 	return nil

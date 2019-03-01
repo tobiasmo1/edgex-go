@@ -87,6 +87,8 @@ func updateAddressable(addressable contract.Addressable) error {
 
 	dest.Name = addressable.Name
 	dest.Protocol = addressable.Protocol
+	LoggingClient.Warn("TJM: LOCALLY ADDED MISSING ASSIGNMENT OF HTTPMETHOD IN UPDATE!!")
+	dest.HTTPMethod = addressable.HTTPMethod
 	dest.Address = addressable.Address
 	dest.Port = addressable.Port
 	dest.Path = addressable.Path
